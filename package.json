@@ -1,0 +1,29 @@
+{
+  "name": "demandador",
+  "version": "0.0.1",
+  "description": "Gera demandas em PDF.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "browserslist": [
+    "last 1 chrome versions"
+  ],
+  "keywords": [
+    "gerador",
+    "demandas",
+    "demandador"
+  ],
+  "author": "Rick Stanley",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-svelte": "^4.0.6",
+    "sass": "^1.26.3",
+    "svelte": "^3.19.2"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1"
+  }
+}
