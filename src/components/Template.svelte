@@ -129,7 +129,7 @@
     font-weight: bold;
   }
 
-  tbody td:not(:first-of-type) {
+  tbody td {
     vertical-align: middle;
     padding: 0.5em 19px;
   }
@@ -192,8 +192,7 @@
       <tr>
         {#each programacao as conteudo, index}
           <td class={index === 0 ? 'data-entrega' : ''}>
-            {@html conteudo}
-            {index === 0 ? '.' + mes_numero : ''}
+            {@html conteudo}{index === 0 ? '.' + mes_numero : ''}
           </td>
         {/each}
       </tr>
