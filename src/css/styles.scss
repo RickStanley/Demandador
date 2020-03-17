@@ -1,8 +1,50 @@
 @import url('normalize.css');
+@import "medium-editor/dist/css/medium-editor.css";
 
 :root {
   --tooltip-bg-color: #dddddd;
   --acao-hover: #e6e6e6;
+}
+
+.tippy-content {
+  text-align: center;
+}
+
+.medium-toolbar-arrow-under::after {
+  border-color: var(--tooltip-bg-color) transparent transparent transparent;
+  top: 40px;
+}
+
+.medium-toolbar-arrow-over::before {
+  border-color: transparent transparent var(--tooltip-bg-color) transparent;
+}
+
+.medium-editor-toolbar-actions li:not(:first-of-type):not(:last-of-type) button {
+  border-radius: 0;
+}
+
+.medium-editor-toolbar-actions li:first-of-type button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.medium-editor-toolbar-actions li:last-of-type button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.medium-editor-toolbar li button {
+  padding: 12px;
+  height: 40px;
+  width: 40px;
+}
+
+.medium-editor-toolbar-actions {
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, .2));
+}
+
+.medium-editor-button-active {
+  filter: invert(1);
 }
 
 html {
@@ -52,6 +94,7 @@ fieldset {
   border: none;
 }
 
+[contenteditable=true],
 select,
 input {
   border: 1px solid transparent;
@@ -60,14 +103,18 @@ input {
   margin-bottom: 5px;
   display: block;
   width: 100%;
+  appearance: none;
+  background-color: white;
 }
 
+[contenteditable=true]:focus,
 select:focus,
 input:focus {
   outline: none;
   border: 1px solid #444;
 }
 
+[contenteditable=true]:hover,
 select:hover,
 input:hover {
   border: 1px solid rgb(140, 140, 140);

@@ -2,11 +2,56 @@
   import tippy from "tippy.js";
   import "tippy.js/dist/tippy.css";
 
-  import { onMount } from "svelte";
+  import MediumEditor from "medium-editor";
+
+  import { onMount, afterUpdate } from "svelte";
+  import { configValida, meses_nomes } from "../js/utils.js";
 
   export let esqueleto;
 
+  $: mes_numero = (meses_nomes.indexOf($esqueleto.data) + 1)
+    .toString()
+    .padStart(2, "0");
+
+  // Para caso a gente precise de meses
+  // const esseAno = new Date().getFullYear();
+  // $: dias_mes = new Date(esseAno, +mes_numero, 0).getDate();
+
+  let editor;
   let arquivo;
+
+  let campos_total = $esqueleto.programacoes.length;
+
+  // esqueleto.subscribe(obj => {
+  //   if (obj.programacoes) {
+  //     obj.programacoes[0][0] = obj.programacoes[0][0].padStart(2, "0");
+  //     // return obj;
+  //   }
+  // });
+
+  function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+      sel = win.getSelection();
+      if (sel.rangeCount > 0) {
+        var range = win.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+      }
+    } else if ((sel = doc.selection) && sel.type != "Control") {
+      var textRange = sel.createRange();
+      var preCaretTextRange = doc.body.createTextRange();
+      preCaretTextRange.moveToElementText(element);
+      preCaretTextRange.setEndPoint("EndToEnd", textRange);
+      caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+  }
 
   const adicionarProgramacao = () => {
     esqueleto.update(obj => {
@@ -21,8 +66,10 @@
     this.innerText = visivel ? "Encolher" : "Expandir";
   };
 
-  const remover = function() {
+  const remover = function(eventoOuId) {
     const position = +this.dataset.programacaoId;
+    const campos = this.parentElement.nextElementSibling.children;
+    editor.removeElements(campos);
     esqueleto.update(obj => {
       obj.programacoes.splice(position, 1);
       return obj;
@@ -52,51 +99,20 @@
       $esqueleto.titulo ||
       data}.json`;
 
-    let pp = document.createElement("a");
-    pp.setAttribute(
+    let ancora = document.createElement("a");
+    ancora.setAttribute(
       "href",
       "data:text/plain;charset=utf-8," + encodeURIComponent(fileContents)
     );
-    pp.setAttribute("download", fileName);
-    pp.click();
-    pp.remove();
-    pp = null;
+    ancora.setAttribute("download", fileName);
+    ancora.click();
+    ancora.remove();
+    ancora = null;
   };
 
   const importar = () => {
     arquivo.click();
   };
-
-  const isString = valor => typeof valor === "string";
-
-  function configValida(configs) {
-    if (Object.keys(configs).length > 6) return false;
-
-    const tem_titulo = "titulo" in configs;
-    const tem_cliente_iniciais = "cliente_iniciais" in configs;
-    const tem_data = "data" in configs;
-    const tem_colunas = "colunas" in configs;
-    const tem_fonte = "fonte" in configs;
-    const tem_programacoes = "programacoes" in configs;
-
-    if (
-      tem_cliente_iniciais &&
-      tem_colunas &&
-      tem_data &&
-      tem_fonte &&
-      tem_programacoes &&
-      tem_titulo
-    ) {
-      if (
-        Array.isArray(configs.colunas) &&
-        configs.colunas.every(isString) &&
-        Array.isArray(configs.programacoes) &&
-        configs.programacoes.every(Array.isArray)
-      )
-        return true;
-      else return false;
-    } else return false;
-  }
 
   const lerArquivo = eventoArquivo => {
     const leitor = new FileReader();
@@ -104,7 +120,9 @@
       try {
         const json = JSON.parse(evento.target.result);
         if (configValida(json)) {
-          esqueleto.set(json);
+          if (confirm("Você quer mesmo sobrescrever a configuração atual?")) {
+            esqueleto.set(json);
+          }
         }
       } catch (error) {
         console.error("Não é um JSON válido.");
@@ -116,29 +134,125 @@
     leitor.readAsText(eventoArquivo.target.files[0]);
   };
 
-  const meses_nomes = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro"
-  ];
+  const checaCampo = function(evento) {
+    const chave = evento.keyCode || evento.key || evento.code;
+    const enter = chave === 13 || ["Enter", "NumpadEnter"].includes(chave);
+    const backspace = chave === 8 || "Backspace" === chave;
+
+    const cima = chave === 38 || "ArrowUp" === chave;
+    const baixo = chave === 40 || "ArrowDown" === chave;
+
+    if (!this.nextElementSibling && enter) {
+      adicionarProgramacao();
+    } else if (enter || baixo) {
+      if (this.nextElementSibling) {
+        this.nextElementSibling.focus();
+      } else {
+        const next_exists = this.parentElement.parentElement.nextElementSibling;
+        if (next_exists && next_exists.tagName === "FIELDSET") {
+          next_exists.querySelector("[contenteditable]").focus();
+        }
+      }
+    } else if (cima || backspace) {
+      console.log(getCaretCharacterOffsetWithin(this));
+
+      if (backspace && getCaretCharacterOffsetWithin(this) !== 0) return;
+      if (this.previousElementSibling) {
+        this.previousElementSibling.focus();
+      } else {
+        const previous_exists = this.parentElement.parentElement
+          .previousElementSibling;
+        if (previous_exists && previous_exists.tagName === "FIELDSET") {
+          const todos_vazios = Array.from(this.parentElement.children).every(
+            child => !child.innerText
+          );
+          if (todos_vazios) {
+            this.parentElement.previousElementSibling
+              .querySelector("[data-programacao-id]")
+              .click();
+          }
+          const children = previous_exists.querySelectorAll(
+            "[contenteditable]"
+          );
+          children[children.length - 1].focus();
+        }
+      }
+    }
+  };
+
+  afterUpdate(e => {
+    const programacoes_largura = $esqueleto.programacoes.length;
+
+    if (!editor && programacoes_largura) {
+      editor = new MediumEditor(".campos [contenteditable]", {
+        toolbar: {
+          buttons: ["bold", "italic", "underline"]
+        },
+        disableReturn: true
+      });
+
+      editor.subscribe("addElement", function(event, editable) {
+        editable.parentElement.firstElementChild.focus();
+      });
+    }
+
+    if (programacoes_largura > campos_total) {
+      editor.addElements(".campos [contenteditable]");
+    }
+
+    campos_total = programacoes_largura;
+  });
 
   onMount(() => {
     tippy("[data-tippy-content]");
+
+    var getCellValue = function(tr, idx) {
+      return tr.children[idx].innerText || tr.children[idx].textContent;
+    };
+
+    var comparer = function(idx, asc) {
+      return function(a, b) {
+        return (function(v1, v2) {
+          return v1 !== "" && v2 !== "" && !isNaN(v1) && !isNaN(v2)
+            ? v1 - v2
+            : v1.toString().localeCompare(v2);
+        })(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+      };
+    };
+
+    Array.prototype.slice
+      .call(document.querySelectorAll("th"))
+      .forEach(function(th) {
+        th.addEventListener("click", function() {
+          var table = th.parentNode;
+          while (table.tagName.toUpperCase() != "TABLE")
+            table = table.parentNode;
+          var tbody = table.querySelector("tbody");
+          Array.prototype.slice
+            .call(tbody.querySelectorAll("tr"))
+            .sort(
+              comparer(
+                Array.prototype.slice.call(th.parentNode.children).indexOf(th),
+                (this.asc = !this.asc)
+              )
+            )
+            .forEach(function(tr) {
+              tbody.appendChild(tr);
+            });
+        });
+      });
   });
 </script>
 
 <style>
   fieldset {
     position: relative;
+    margin: 0;
+  }
+
+  legend {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
   }
 
   .acoes {
@@ -154,7 +268,12 @@
 
   .controles {
     display: flex;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    position: sticky;
+    top: -1rem;
+    padding: 0.5rem 0;
+    background-color: inherit;
+    z-index: 1;
   }
 
   .controles > * {
@@ -168,14 +287,43 @@
     margin-right: 0;
   }
 
+  .secao-titulo {
+    display: flex;
+    align-items: center;
+  }
+  .secao-titulo p {
+    margin-bottom: 0.5em;
+  }
   button svg {
     display: block;
+    margin: 0 auto;
   }
+
+  /* .dica-callout {
+    width: 100%;
+    background-color: var(--callout-info-bg, #eaeaea);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #312b45;
+    color: var(--texto-cor-primario, #312b45);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .dica-callout p {
+    margin: 0 0 0 1rem;
+    flex: 1;
+  }
+
+  .dica-callout svg {
+    width: 20px;
+  } */
 </style>
 
 <div class="controles">
   <button
-    data-tippy-content="Exportar configurações"
+    data-tippy-content="Exportar conteúdo"
     type="button"
     on:click={exportar}>
     <svg
@@ -204,7 +352,7 @@
   </button>
   <button
     type="button"
-    data-tippy-content="Importar configurações"
+    data-tippy-content="Importar conteúdo"
     on:click={importar}>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 1000 1000">
       <path
@@ -311,6 +459,10 @@
     </svg>
   </button>
 </div>
+<!-- <aside class="dica-callout unselectable">
+  <svg xmlns="http://www.w3.org/2000/svg" style="isolation:isolate;" viewBox="0 0 48 48"><path fill="#C0BBCD" fill-rule="nonzero" d="M22 34h4V22h-4v12zm2-30C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm0 36c-8.82 0-16-7.18-16-16S15.18 8 24 8s16 7.18 16 16-7.18 16-16 16zm-2-22h4v-4h-4v4z"></path></svg>
+  <p>Você pode re-ordernar a tabela clicando nos cabeçalhos.</p>
+</aside> -->
 <form>
   <label for="titulo">Título</label>
   <input id="titulo" type="text" bind:value={$esqueleto.titulo} />
@@ -325,10 +477,39 @@
       <option value={mes}>{mes}</option>
     {/each}
   </select>
-  <br />
+  <div class="secao-titulo">
+    <p>Programações</p>
+    <div
+      class="dica"
+      data-tippy-content="Para alterar a aparência do texto, basta selecioná-lo
+      e utilizar as ferramentas de estilos.">
+      <svg
+        class="infos__icon"
+        role="presentation"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        style="display:block"
+        viewBox="0 0 256 256">
+        <path
+          fill="#f5ab1e"
+          fill-rule="evenodd"
+          d="M128 22.158a105.84 105.84 0 00-105.84 105.84A105.84 105.84 0 00128
+          233.838a105.84 105.84 0 00105.84-105.84A105.84 105.84 0 00128
+          22.158zm0 32.76c5.16.117 9.55 1.875 13.18 5.273 3.34 3.575 5.07 7.94
+          5.19 13.096-.12 5.156-1.85 9.404-5.19 12.744-3.63 3.75-8.02
+          5.625-13.18
+          5.625s-9.4-1.875-12.74-5.625c-3.75-3.34-5.63-7.588-5.63-12.744s1.88-9.521
+          5.63-13.096c3.34-3.398 7.58-5.156 12.74-5.273zm-16.35
+          53.792h32.79v92.37h-32.79v-92.37z" />
+      </svg>
+    </div>
+  </div>
   {#each $esqueleto.programacoes as programacao, id}
     <fieldset>
-      <legend>Programação</legend>
+      <legend>
+        {programacao[0] ? `${programacao[0]}.${mes_numero}` : 'Programação'}
+      </legend>
       <div class="acoes">
         <button type="button" on:click={remover} data-programacao-id={id}>
           Remover
@@ -337,10 +518,11 @@
       </div>
       <div class="campos">
         {#each programacao as conteudo, index}
-          <input
-            type="text"
-            placeholder={$esqueleto.colunas[index]}
-            bind:value={$esqueleto.programacoes[id][index]} />
+          <div
+            contenteditable="true"
+            data-placeholder={$esqueleto.colunas[index]}
+            on:keydown={checaCampo}
+            bind:innerHTML={$esqueleto.programacoes[id][index]} />
         {/each}
       </div>
     </fieldset>

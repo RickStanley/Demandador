@@ -8,13 +8,11 @@
 
   let esqueleto = writable({
     titulo: "Demandas",
-    cliente_iniciais: "UNN",
-    data: "Março",
-    colunas: ["Data de entrega", "Tema", "Job", "Formato"],
+    cliente_iniciais: "FMT",
+    data: "Janeiro",
+    colunas: ["Dia da entrega", "Tema", "Job", "Formato"],
     fonte: 16,
-    programacoes: [
-      ["09.03", "Março Lilás", "Informativo", "Feed | Story | Banner Site"]
-    ]
+    programacoes: []
   });
 
   // window.addEventListener("dragenter", function(e) {
@@ -67,7 +65,23 @@
     top: 0;
   }
 
-  .dropzone {
+  .editor-container::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .editor-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .editor-container::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .editor-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* .dropzone {
     box-sizing: border-box;
     display: none;
     position: fixed;
@@ -79,13 +93,7 @@
 
     background: rgba(96, 167, 220, 0.8);
     border: 11px dashed #60a7dc;
-  }
-
-  @media print {
-    .editor-container {
-      display: none;
-    }
-  }
+  } */
 </style>
 
 <!-- @todo Dropzone -->

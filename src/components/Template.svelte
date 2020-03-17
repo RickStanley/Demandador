@@ -1,5 +1,9 @@
 <script>
   export let esqueleto;
+  import { meses_nomes } from "../js/utils.js";
+  $: mes_numero = (meses_nomes.indexOf($esqueleto.data) + 1)
+    .toString()
+    .padStart(2, "0");
 </script>
 
 <style>
@@ -133,6 +137,16 @@
   tbody tr:nth-of-type(odd) {
     background-color: #efefef;
   }
+
+  @media print {
+    :global(*) {
+      visibility: hidden;
+    }
+    table,
+    table * {
+      visibility: visible;
+    }
+  }
 </style>
 
 <table style="font-size: {$esqueleto.fonte}px">
@@ -187,7 +201,9 @@
     {#each $esqueleto.programacoes as programacao}
       <tr>
         {#each programacao as conteudo, index}
-          <td class={index === 0 ? 'data-entrega' : ''}>{conteudo}</td>
+          <td class={index === 0 ? 'data-entrega' : ''}>
+            {@html conteudo}{index === 0 ? '.' + mes_numero : ''}
+          </td>
         {/each}
       </tr>
     {/each}
