@@ -137,16 +137,6 @@
   tbody tr:nth-of-type(odd) {
     background-color: #efefef;
   }
-
-  @media print {
-    :global(*) {
-      visibility: hidden;
-    }
-    table,
-    table * {
-      visibility: visible;
-    }
-  }
 </style>
 
 <table style="font-size: {$esqueleto.fonte}px">
@@ -202,7 +192,8 @@
       <tr>
         {#each programacao as conteudo, index}
           <td class={index === 0 ? 'data-entrega' : ''}>
-            {@html conteudo}{index === 0 ? '.' + mes_numero : ''}
+            {@html conteudo}
+            {index === 0 ? '.' + mes_numero : ''}
           </td>
         {/each}
       </tr>

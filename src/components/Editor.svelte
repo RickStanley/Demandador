@@ -154,7 +154,6 @@
         }
       }
     } else if (cima || backspace) {
-      console.log(getCaretCharacterOffsetWithin(this));
 
       if (backspace && getCaretCharacterOffsetWithin(this) !== 0) return;
       if (this.previousElementSibling) {
@@ -163,13 +162,15 @@
         const previous_exists = this.parentElement.parentElement
           .previousElementSibling;
         if (previous_exists && previous_exists.tagName === "FIELDSET") {
-          const todos_vazios = Array.from(this.parentElement.children).every(
-            child => !child.innerText
-          );
-          if (todos_vazios) {
-            this.parentElement.previousElementSibling
-              .querySelector("[data-programacao-id]")
-              .click();
+          if (backspace) {
+            const todos_vazios = Array.from(this.parentElement.children).every(
+              child => !child.innerText
+            );
+            if (todos_vazios && confirm('Apagar programação?')) {
+              this.parentElement.previousElementSibling
+                .querySelector("[data-programacao-id]")
+                .click();
+            }
           }
           const children = previous_exists.querySelectorAll(
             "[contenteditable]"

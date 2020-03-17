@@ -1,6 +1,6 @@
 {
   "name": "demandador",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Gera demandas em PDF.",
   "main": "src/index.js",
   "scripts": {

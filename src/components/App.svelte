@@ -94,6 +94,12 @@
     background: rgba(96, 167, 220, 0.8);
     border: 11px dashed #60a7dc;
   } */
+  @media print {
+    .editor-container {
+      visibility: hidden;
+      display: none;
+    }
+  }
 </style>
 
 <!-- @todo Dropzone -->
