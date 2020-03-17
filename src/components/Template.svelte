@@ -22,7 +22,7 @@
   th {
     vertical-align: bottom;
     line-height: 1;
-    font-size: 1.2rem;
+    font-size: 1.2em;
     position: relative;
   }
 
@@ -65,7 +65,7 @@
     padding-left: 19px;
     padding-right: 10px;
     color: var(--cinza);
-    font-size: 5rem;
+    font-size: 5em;
   }
 
   .empresa-nome,
@@ -78,7 +78,7 @@
   }
 
   .mes-nome {
-    font-size: 2rem;
+    font-size: 2em;
     padding-left: 0.2em;
     color: var(--cor-tema);
   }
@@ -135,7 +135,7 @@
   }
 </style>
 
-<table>
+<table style="font-size: {$esqueleto.fonte}px">
   <thead>
     <tr role="presentation">
       <td rowspan="3" role="presentation" />
