@@ -30,22 +30,22 @@
   // });
 
   function getCaretCharacterOffsetWithin(element) {
-    var caretOffset = 0;
-    var doc = element.ownerDocument || element.document;
-    var win = doc.defaultView || doc.parentWindow;
-    var sel;
+    let caretOffset = 0;
+    const doc = element.ownerDocument || element.document;
+    const win = doc.defaultView || doc.parentWindow;
+    let sel;
     if (typeof win.getSelection != "undefined") {
       sel = win.getSelection();
       if (sel.rangeCount > 0) {
-        var range = win.getSelection().getRangeAt(0);
-        var preCaretRange = range.cloneRange();
+        const range = win.getSelection().getRangeAt(0);
+        const preCaretRange = range.cloneRange();
         preCaretRange.selectNodeContents(element);
         preCaretRange.setEnd(range.endContainer, range.endOffset);
         caretOffset = preCaretRange.toString().length;
       }
     } else if ((sel = doc.selection) && sel.type != "Control") {
-      var textRange = sel.createRange();
-      var preCaretTextRange = doc.body.createTextRange();
+      const textRange = sel.createRange();
+      const preCaretTextRange = doc.body.createTextRange();
       preCaretTextRange.moveToElementText(element);
       preCaretTextRange.setEndPoint("EndToEnd", textRange);
       caretOffset = preCaretTextRange.text.length;
@@ -138,13 +138,13 @@
     const chave = evento.keyCode || evento.key || evento.code;
     const enter = chave === 13 || ["Enter", "NumpadEnter"].includes(chave);
     const backspace = chave === 8 || "Backspace" === chave;
-
     const cima = chave === 38 || "ArrowUp" === chave;
     const baixo = chave === 40 || "ArrowDown" === chave;
+    const del = chave === 46 || "Delete" === chave;
 
     if (!this.nextElementSibling && enter) {
       adicionarProgramacao();
-    } else if (enter || baixo) {
+    } else if ((enter || baixo) && evento.ctrlKey) {
       if (this.nextElementSibling) {
         this.nextElementSibling.focus();
       } else {
@@ -153,29 +153,30 @@
           next_exists.querySelector("[contenteditable]").focus();
         }
       }
-    } else if (cima || backspace) {
-
+    } else if (cima || backspace || del) {
       if (backspace && getCaretCharacterOffsetWithin(this) !== 0) return;
-      if (this.previousElementSibling) {
+      if (this.previousElementSibling && evento.ctrlKey && !del) {
         this.previousElementSibling.focus();
       } else {
         const previous_exists = this.parentElement.parentElement
           .previousElementSibling;
         if (previous_exists && previous_exists.tagName === "FIELDSET") {
-          if (backspace) {
+          if (backspace || del) {
             const todos_vazios = Array.from(this.parentElement.children).every(
               child => !child.innerText
             );
-            if (todos_vazios && confirm('Apagar programação?')) {
+            if (todos_vazios && confirm("Apagar programação?")) {
               this.parentElement.previousElementSibling
                 .querySelector("[data-programacao-id]")
                 .click();
             }
           }
-          const children = previous_exists.querySelectorAll(
-            "[contenteditable]"
-          );
-          children[children.length - 1].focus();
+          if (evento.ctrlKey && !del) {
+            const children = previous_exists.querySelectorAll(
+              "[contenteditable]"
+            );
+            children[children.length - 1].focus();
+          }
         }
       }
     }
@@ -205,7 +206,9 @@
   });
 
   onMount(() => {
-    tippy("[data-tippy-content]");
+    tippy("[data-tippy-content]", {
+      allowHTML: true
+    });
 
     var getCellValue = function(tr, idx) {
       return tr.children[idx].innerText || tr.children[idx].textContent;
@@ -483,7 +486,9 @@
     <div
       class="dica"
       data-tippy-content="Para alterar a aparência do texto, basta selecioná-lo
-      e utilizar as ferramentas de estilos.">
+      e utilizar as ferramentas de estilos.<br><br> Para navegar entre os campos
+      segure a tecla <b>CTRL</b> e use as setas direcionais ↓ ou ↑, ou Enter
+      para avançar ou Apagar (←) para voltar.">
       <svg
         class="infos__icon"
         role="presentation"
