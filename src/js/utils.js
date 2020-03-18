@@ -15,6 +15,9 @@ const meses_nomes = [
 
 const isString = valor => typeof valor === "string";
 
+const moveElement = (arr, from, to) =>
+    arr.map((item, i) => (i === from ? arr[to] : i === to ? arr[from] : item));
+
 function configValida(configs) {
     if (Object.keys(configs).length > 6) return false;
 
@@ -46,5 +49,6 @@ function configValida(configs) {
 
 export {
     configValida,
-    meses_nomes
+    meses_nomes,
+    moveElement
 };

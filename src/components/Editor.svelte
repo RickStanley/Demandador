@@ -5,7 +5,7 @@
   import MediumEditor from "medium-editor";
 
   import { onMount, afterUpdate } from "svelte";
-  import { configValida, meses_nomes } from "../js/utils.js";
+  import { configValida, meses_nomes, moveElement } from "../js/utils.js";
 
   export let esqueleto;
 
@@ -75,13 +75,12 @@
       return obj;
     });
   };
-  const move = (arr, from, to) =>
-    arr.map((item, i) => (i === from ? arr[to] : i === to ? arr[from] : item));
+
   const moveCima = function() {
     const index = +this.dataset.programacaoId;
     if (index <= 0) return;
     esqueleto.update(obj => {
-      const novo_array = move(obj.programacoes, index, index - 1);
+      const novo_array = moveElement(obj.programacoes, index, index - 1);
       obj.programacoes = novo_array;
 
       return obj;
@@ -92,7 +91,7 @@
     const index = +this.dataset.programacaoId;
     if (index >= campos_total - 1) return;
     esqueleto.update(obj => {
-      const novo_array = move(obj.programacoes, index, index + 1);
+      const novo_array = moveElement(obj.programacoes, index, index + 1);
       obj.programacoes = novo_array;
 
       return obj;
