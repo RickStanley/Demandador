@@ -16,7 +16,7 @@
     "demandador"
   ],
   "author": "Rick Stanley",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-svelte": "^4.0.6",
