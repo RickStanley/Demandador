@@ -97,7 +97,7 @@
       1}-${hoje.getFullYear()}`;
     const fileName = `demandador_${$esqueleto.cliente_iniciais ||
       $esqueleto.titulo ||
-      data}.json`;
+      data}.mdm`;
 
     let ancora = document.createElement("a");
     ancora.setAttribute(
@@ -120,7 +120,7 @@
       try {
         const json = JSON.parse(evento.target.result);
         if (configValida(json)) {
-          if (confirm("Você quer mesmo sobrescrever a configuração atual?")) {
+          if (confirm("Você quer mesmo sobrescrever o conteúdo atual?")) {
             esqueleto.set(json);
           }
         }
