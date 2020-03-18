@@ -75,6 +75,29 @@
       return obj;
     });
   };
+  const move = (arr, from, to) =>
+    arr.map((item, i) => (i === from ? arr[to] : i === to ? arr[from] : item));
+  const moveCima = function() {
+    const index = +this.dataset.programacaoId;
+    if (index <= 0) return;
+    esqueleto.update(obj => {
+      const novo_array = move(obj.programacoes, index, index - 1);
+      obj.programacoes = novo_array;
+
+      return obj;
+    });
+  };
+
+  const moveBaixo = function() {
+    const index = +this.dataset.programacaoId;
+    if (index >= campos_total - 1) return;
+    esqueleto.update(obj => {
+      const novo_array = move(obj.programacoes, index, index + 1);
+      obj.programacoes = novo_array;
+
+      return obj;
+    });
+  };
 
   const aumentarFonte = () => {
     esqueleto.update(obj => {
@@ -196,6 +219,7 @@
       editor.subscribe("addElement", function(event, editable) {
         editable.parentElement.firstElementChild.focus();
       });
+
     }
 
     if (programacoes_largura > campos_total) {
@@ -264,6 +288,10 @@
     top: 0;
     right: 0;
     font-size: 0.75rem;
+  }
+
+  .acoes button {
+    margin: 0 0.2em;
   }
 
   .decresce-fonte {
@@ -521,6 +549,12 @@
           Remover
         </button>
         <button type="button" on:click={encolherProgramacao}>Encolher</button>
+        <button type="button" on:click={moveCima} data-programacao-id={id} title="Mover para cima">
+          ↑
+        </button>
+        <button type="button" on:click={moveBaixo} data-programacao-id={id} title="Mover para baixo">
+          ↓
+        </button>
       </div>
       <div class="campos">
         {#each programacao as conteudo, index}

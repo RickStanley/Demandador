@@ -47,6 +47,10 @@
   filter: invert(1);
 }
 
+.medium-editor-element.medium-editor-placeholder:not(:empty)::after {
+  content: none !important;
+}
+
 html {
   height: 100%;
   box-sizing: border-box;

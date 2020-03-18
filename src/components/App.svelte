@@ -56,7 +56,7 @@
 
   .editor-container {
     padding: 1rem;
-    flex-basis: 300px;
+    flex-basis: 350px;
     background-color: whitesmoke;
     height: 100vh;
     overflow: auto;
