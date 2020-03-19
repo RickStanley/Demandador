@@ -12,7 +12,8 @@
     data: "Janeiro",
     colunas: ["Dia da entrega", "Tema", "Job", "Formato"],
     fonte: 16,
-    programacoes: []
+    programacoes: [],
+    rodape: []
   });
 
   // window.addEventListener("dragenter", function(e) {

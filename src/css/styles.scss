@@ -94,8 +94,17 @@ button[ativo] {
   background-color: rgb(112, 112, 112);
 }
 
+button svg {
+  display: block;
+  margin: 0 auto;
+}
+
 fieldset {
   border: none;
+}
+
+label {
+  font-weight: 500;
 }
 
 [contenteditable=true],
@@ -122,4 +131,8 @@ input:focus {
 select:hover,
 input:hover {
   border: 1px solid rgb(140, 140, 140);
+}
+
+[hidden] {
+  display: none;
 }

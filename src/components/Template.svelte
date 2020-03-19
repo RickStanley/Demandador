@@ -55,6 +55,18 @@
     background-color: #5e6163;
   }
 
+  tfoot {
+    background-color: #efefef;
+  }
+
+  tfoot td {
+    padding: 0.5em 19px;
+  }
+
+  tfoot tr:not(:first-of-type) td {
+    width: 600px;
+  }
+
   .empresa-nome::after {
     background-color: var(--cor-tema);
     margin-bottom: 0;
@@ -145,7 +157,9 @@
       <td rowspan="3" role="presentation" />
     </tr>
     <tr>
-      <td class="titulo" colspan="3">{$esqueleto.titulo}</td>
+      <td class="titulo" colspan={$esqueleto.colunas.length - 1}>
+        {$esqueleto.titulo}
+      </td>
     </tr>
     <tr>
       <td class="empresa-nome">
@@ -192,10 +206,24 @@
       <tr>
         {#each programacao as conteudo, index}
           <td class={index === 0 ? 'data-entrega' : ''}>
-            {@html conteudo}{index === 0 ? '.' + mes_numero : ''}
+            {@html conteudo + (index === 0 ? '.' + mes_numero : '')}
           </td>
         {/each}
       </tr>
     {/each}
   </tbody>
+  <tfoot>
+    {#if $esqueleto.rodape.length}
+      <tr role="presentation">
+        <td role="presentation" rowspan={$esqueleto.rodape.length + 1} />
+      </tr>
+    {/if}
+    {#each $esqueleto.rodape as anotacao}
+      <tr>
+        <td colspan={$esqueleto.colunas.length - 1}>
+          {@html anotacao}
+        </td>
+      </tr>
+    {/each}
+  </tfoot>
 </table>
