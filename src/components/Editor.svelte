@@ -202,6 +202,12 @@
       contexto === "programacao" ? "programação" : "anotação";
 
     if (!this.nextElementSibling && enter) {
+      const proximo_campos = this.parentElement.parentElement
+        .nextElementSibling;
+      if (proximo_campos && proximo_campos.tagName === "FIELDSET") {
+        proximo_campos.querySelector("[contenteditable]").focus();
+        return;
+      }
       if (contexto === "programacao") {
         adicionarProgramacao();
       } else {
@@ -260,7 +266,7 @@
       editor.subscribe("addElement", function(event, editable) {
         editable.parentElement.firstElementChild.focus();
       });
-      document.querySelector('.campos [contenteditable]').focus();
+      document.querySelector(".campos [contenteditable]").focus();
     }
 
     if (

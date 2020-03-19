@@ -20,6 +20,15 @@
     -webkit-print-color-adjust: exact;
     color-adjust: exact;
     color: #444444;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .data-entrega-fundo {
+    position: absolute;
+    width: 80px;
+    height: 100%;
+    background-image: linear-gradient(to bottom, #10bbd2, #056083);
   }
 
   td,
@@ -55,12 +64,14 @@
     background-color: #5e6163;
   }
 
+  tfoot tr,
   tfoot {
     background-color: #efefef;
   }
 
   tfoot td {
     padding: 0.5em 19px;
+    background-color: inherit;
   }
 
   tfoot tr:not(:first-of-type) td {
@@ -136,7 +147,7 @@
   }
 
   tbody .data-entrega {
-    background-color: var(--data-entrega-fundo);
+    /* background-color: var(--data-entrega-fundo); */
     color: white;
     font-weight: bold;
   }
@@ -174,6 +185,7 @@
       </td>
       <td>
         <img
+          onerror="this.remove()"
           style="display:block;object-fit:cover;"
           loading="lazy"
           width="200"
@@ -206,6 +218,7 @@
     </tr>
   </thead>
   <tbody>
+    <span class="data-entrega-fundo" />
     {#each $esqueleto.programacoes as programacao}
       <tr>
         {#each programacao as conteudo, index}
