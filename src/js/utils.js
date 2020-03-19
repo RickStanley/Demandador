@@ -20,7 +20,7 @@ const moveElement = (arr, from, to) =>
 
 // @todo Documentar
 function configValida(configs) {
-    if (Object.keys(configs).length > 6) return false;
+    if (Object.keys(configs).length > 7) return false;
 
     const tem_titulo = "titulo" in configs;
     const tem_cliente_iniciais = "cliente_iniciais" in configs;
