@@ -1,6 +1,6 @@
 <script>
   export let esqueleto;
-  import { meses_nomes } from "../js/utils.js";
+  import { meses_nomes, hashCode } from "../js/utils.js";
   $: mes_numero = (meses_nomes.indexOf($esqueleto.data) + 1)
     .toString()
     .padStart(2, "0");
@@ -29,6 +29,10 @@
     width: 80px;
     height: 100%;
     background-image: linear-gradient(to bottom, #10bbd2, #056083);
+  }
+
+  :global(td.ativo) {
+    box-shadow: inset 0 0 0 2px black;
   }
 
   td,
@@ -184,14 +188,14 @@
         <b>{$esqueleto.data}</b>
       </td>
       <td>
-        <img
+        <!-- <img
           onerror="this.remove()"
           style="display:block;object-fit:cover;"
           loading="lazy"
           width="200"
           height="30"
           src="https://maru.fermen.to/marca/fermento-horizontal.png"
-          alt="Fermen.to Innovation Lab" />
+          alt="Fermen.to Innovation Lab" /> -->
       </td>
     </tr>
     <tr role="presentation">
@@ -219,10 +223,12 @@
   </thead>
   <tbody>
     <span class="data-entrega-fundo" />
-    {#each $esqueleto.programacoes as programacao}
+    {#each $esqueleto.programacoes as programacao, id}
       <tr>
         {#each programacao as conteudo, index}
-          <td class={index === 0 ? 'data-entrega' : ''}>
+          <td
+            id={hashCode('programacao_' + index + id)}
+            class={index === 0 ? 'data-entrega' : ''}>
             {@html conteudo + (index === 0 ? '.' + mes_numero : '')}
           </td>
         {/each}
@@ -235,9 +241,11 @@
         <td role="presentation" rowspan={$esqueleto.rodape.length + 1} />
       </tr>
     {/if}
-    {#each $esqueleto.rodape as anotacao}
+    {#each $esqueleto.rodape as anotacao, index}
       <tr>
-        <td colspan={$esqueleto.colunas.length - 1}>
+        <td
+          id={hashCode('anotacao_' + index.toString())}
+          colspan={$esqueleto.colunas.length - 1}>
           {@html anotacao}
         </td>
       </tr>

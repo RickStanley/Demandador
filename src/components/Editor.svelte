@@ -16,7 +16,8 @@
     configValida,
     meses_nomes,
     moveElement,
-    pegaPosicaoDoCursor
+    pegaPosicaoDoCursor,
+    hashCode
   } from "../js/utils.js";
 
   export let esqueleto;
@@ -252,6 +253,15 @@
     }
   };
 
+  const spotlight = function() {
+    const celula = this.dataset.id;
+    document.getElementById(celula).classList.add("ativo");
+  };
+
+  const unspot = () => {
+    document.querySelector("td.ativo").classList.remove("ativo");
+  };
+
   afterUpdate(e => {
     const programacoes_largura = $esqueleto.programacoes.length;
     const anotacoes_largura = $esqueleto.rodape.length;
@@ -443,9 +453,12 @@
         </div>
         <div class="campos">
           <div
+            data-id={hashCode('anotacao_' + index.toString())}
             contenteditable="true"
             data-placeholder="Anotação"
             on:keydown={checaCampo}
+            on:focus={spotlight}
+            on:blur={unspot}
             bind:innerHTML={$esqueleto.rodape[index]} />
         </div>
       </fieldset>
@@ -495,10 +508,13 @@
       <div class="campos">
         {#each programacao as conteudo, index}
           <div
+            data-id={hashCode('programacao_' + index + id)}
             contenteditable="true"
             data-contexto="programacao"
             data-placeholder={$esqueleto.colunas[index]}
             on:keydown={checaCampo}
+            on:focus={spotlight}
+            on:blur={unspot}
             bind:innerHTML={$esqueleto.programacoes[id][index]} />
         {/each}
       </div>

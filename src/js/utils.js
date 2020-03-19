@@ -36,7 +36,7 @@ function configValida(configs) {
         tem_data &&
         tem_fonte &&
         tem_programacoes &&
-        tem_titulo && 
+        tem_titulo &&
         tem_rodape
     ) {
         if (
@@ -78,9 +78,17 @@ function pegaPosicaoDoCursor(element) {
     return caretOffset;
 }
 
+/**
+ * Cria um hash previsível.
+ * @param {string} s 
+ */
+const hashCode = s => { for (var i = 0, h; i < s.length; i++)h = Math.imul(31, h) + s.charCodeAt(i) | 0; return h }
+
+
 export {
     configValida,
     meses_nomes,
     moveElement,
-    pegaPosicaoDoCursor
+    pegaPosicaoDoCursor,
+    hashCode
 };
