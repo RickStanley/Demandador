@@ -146,6 +146,10 @@
     padding: 0.5em 19px;
   }
 
+  tbody td:first-of-type {
+    padding: 0.5em;
+  }
+
   tbody tr:nth-of-type(odd) {
     background-color: #efefef;
   }
