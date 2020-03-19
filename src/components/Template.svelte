@@ -188,14 +188,14 @@
         <b>{$esqueleto.data}</b>
       </td>
       <td>
-        <!-- <img
+        <img
           onerror="this.remove()"
           style="display:block;object-fit:cover;"
           loading="lazy"
           width="200"
           height="30"
           src="https://maru.fermen.to/marca/fermento-horizontal.png"
-          alt="Fermen.to Innovation Lab" /> -->
+          alt="Fermen.to Innovation Lab" />
       </td>
     </tr>
     <tr role="presentation">
